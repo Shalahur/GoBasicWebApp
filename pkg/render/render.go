@@ -2,6 +2,7 @@ package render
 
 import (
 	"BasicWebApp/pkg/config"
+	"BasicWebApp/pkg/models"
 	"bytes"
 	"fmt"
 	"html/template"
@@ -16,7 +17,7 @@ var appConfig *config.AppConfig
 func NewTemplates(configParam *config.AppConfig) {
 	appConfig = configParam
 }
-func RenderTemplate(writer http.ResponseWriter, tmpl string) {
+func RenderTemplate(writer http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var templateCache map[string]*template.Template
 	if appConfig.UseCache {
 		templateCache = appConfig.TemplateCache
@@ -30,8 +31,11 @@ func RenderTemplate(writer http.ResponseWriter, tmpl string) {
 	}
 
 	bufferObject := new(bytes.Buffer)
-	_ = templateObject.Execute(bufferObject, nil)
-	_, err := bufferObject.WriteTo(writer)
+	err := templateObject.Execute(bufferObject, td)
+	if err != nil {
+		fmt.Println("Error writing template to browser", err)
+	}
+	_, err = bufferObject.WriteTo(writer)
 	if err != nil {
 		fmt.Println("Error writing template to browser", err)
 	}

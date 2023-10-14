@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"BasicWebApp/pkg/config"
+	"BasicWebApp/pkg/models"
 	"BasicWebApp/pkg/render"
 	"net/http"
 )
@@ -24,9 +25,13 @@ func NewHandlers(r *Repository) {
 }
 
 func (m *Repository) Home(writer http.ResponseWriter, request *http.Request) {
-	render.RenderTemplate(writer, "home.page.tmpl")
+	render.RenderTemplate(writer, "home.page.tmpl", &models.TemplateData{})
 }
 
 func (m *Repository) About(writer http.ResponseWriter, request *http.Request) {
-	render.RenderTemplate(writer, "about.page.tmpl")
+	stringMap := make(map[string]string)
+	stringMap["test"] = "about me"
+	render.RenderTemplate(writer, "about.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }
