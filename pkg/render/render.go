@@ -1,6 +1,7 @@
 package render
 
 import (
+	"BasicWebApp/pkg/config"
 	"bytes"
 	"fmt"
 	"html/template"
@@ -10,27 +11,33 @@ import (
 )
 
 var functions = template.FuncMap{}
+var appConfig *config.AppConfig
 
+func NewTemplates(configParam *config.AppConfig) {
+	appConfig = configParam
+}
 func RenderTemplate(writer http.ResponseWriter, tmpl string) {
-
-	templateCache, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal(err)
+	var templateCache map[string]*template.Template
+	if appConfig.UseCache {
+		templateCache = appConfig.TemplateCache
+	} else {
+		templateCache, _ = CreateTemplateCache()
 	}
 
 	templateObject, ok := templateCache[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("Could not get template from template cache")
 	}
 
 	bufferObject := new(bytes.Buffer)
 	_ = templateObject.Execute(bufferObject, nil)
-	_, err = bufferObject.WriteTo(writer)
+	_, err := bufferObject.WriteTo(writer)
 	if err != nil {
 		fmt.Println("Error writing template to browser", err)
 	}
 }
 
+// CreateTemplateCache: create the template cache
 func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
