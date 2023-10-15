@@ -7,7 +7,8 @@ import (
 	"net/http"
 )
 
-// TODO: Repository concept does not understand. need to read more
+// TODO: Repository concept does not understand. need to read more\
+// Repo the repository used by the handlers
 var Repo *Repository
 
 type Repository struct {
@@ -24,13 +25,17 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
+// Home is the handler for the home page
 func (m *Repository) Home(writer http.ResponseWriter, request *http.Request) {
 	render.RenderTemplate(writer, "home.page.tmpl", &models.TemplateData{})
 }
 
+// About is the handler for the about page
 func (m *Repository) About(writer http.ResponseWriter, request *http.Request) {
+
 	stringMap := make(map[string]string)
-	stringMap["test"] = "about me"
+	stringMap["test"] = "Hello, again"
+
 	render.RenderTemplate(writer, "about.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,
 	})

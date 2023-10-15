@@ -19,6 +19,7 @@ func NewTemplates(configParam *config.AppConfig) {
 }
 func RenderTemplate(writer http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var templateCache map[string]*template.Template
+
 	if appConfig.UseCache {
 		templateCache = appConfig.TemplateCache
 	} else {
@@ -31,10 +32,12 @@ func RenderTemplate(writer http.ResponseWriter, tmpl string, td *models.Template
 	}
 
 	bufferObject := new(bytes.Buffer)
+
 	err := templateObject.Execute(bufferObject, td)
 	if err != nil {
 		fmt.Println("Error writing template to browser", err)
 	}
+
 	_, err = bufferObject.WriteTo(writer)
 	if err != nil {
 		fmt.Println("Error writing template to browser", err)

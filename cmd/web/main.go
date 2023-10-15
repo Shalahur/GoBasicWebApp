@@ -11,9 +11,9 @@ import (
 
 const portNumber = ":8080"
 
-func main() {
+var app config.AppConfig
 
-	var app config.AppConfig
+func main() {
 
 	templateCache, err := render.CreateTemplateCache()
 	if err != nil {
@@ -28,6 +28,8 @@ func main() {
 	handlers.NewHandlers(repo)
 
 	render.NewTemplates(&app)
+
+	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
 	http.HandleFunc("/", handlers.Repo.Home)
 	http.HandleFunc("/about", handlers.Repo.About)
