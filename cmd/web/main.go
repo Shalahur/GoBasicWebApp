@@ -11,7 +11,7 @@ import (
 
 const portNumber = ":8080"
 
-var app config.AppConfig
+var appConfiguration config.AppConfig
 
 func main() {
 
@@ -19,21 +19,25 @@ func main() {
 	if err != nil {
 		log.Fatal("Cannot create template cache")
 	}
-	app.TemplateCache = templateCache
+	appConfiguration.TemplateCache = templateCache
 	// while developing application make the field value false
 	// in production keep the value true
-	app.UseCache = false
+	appConfiguration.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&appConfiguration)
 	handlers.NewHandlers(repo)
 
-	render.NewTemplates(&app)
+	render.NewTemplates(&appConfiguration)
 
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
-
 	fmt.Println(fmt.Sprint("Starting application on port %s", portNumber))
-	_ = http.ListenAndServe(portNumber, nil)
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&appConfiguration),
+	}
+
+	err = srv.ListenAndServe()
+	log.Fatal(err)
 }
